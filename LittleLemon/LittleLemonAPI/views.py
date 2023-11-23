@@ -7,11 +7,18 @@ from .models import Category
 from .serializers import CategorySerializer
 # Create your views here.
     
-@api_view()
+@api_view(['GET', 'POST'])
 def menu_items(request):
-    items = MenuItem.objects.select_related('category').all()
-    serialized_item = MenuItemSerializer(items, many=True, context={'request' : request})
-    return Response(serialized_item.data)
+    if request.method == 'GET':
+        items = MenuItem.objects.select_related('category').all()
+        serialized_item = MenuItemSerializer(items, many=True, context={'request' : request})
+        return Response(serialized_item.data)
+    if request.method == 'POST':
+        serialized_item = MenuItemSerializer(data=request.data)
+        if serialized_item.is_valid(raise_exception=False):
+            serialized_item.save()
+        return Response(serialized_item.data, status=201)
+        
 
 @api_view()
 def single_item(request, id):
