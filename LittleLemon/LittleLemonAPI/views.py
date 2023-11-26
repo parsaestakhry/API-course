@@ -10,24 +10,42 @@ from rest_framework.decorators import renderer_classes
 from rest_framework_csv.renderers import CSVRenderer
 # Create your views here.
 
-
+# using decorators we determine the access of the request
 @api_view(["GET", "POST"])
+# a view to see the items of the menu
 def menu_items(request):
+    # if the client request is GET
     if request.method == "GET":
+        # save all the objects of the model also their foreign keys in a variable called items
         items = MenuItem.objects.select_related("category").all()
+        #filtering based on the categories
+        category_name = request.query_params.get('category')
+        # filtering on price
+        to_price = request.query_params.get('to_price')
+        # if there's a category name :
+        if category_name:
+            items = items.filter(category__title=category_name)
+            # serialize all the objects of the model passing it to its model serializer and the request
         serialized_item = MenuItemSerializer(
             items, many=True, context={"request": request}
         )
+        # return the data of the serialized items
         return Response(serialized_item.data)
+    
+    # if the client method is POST
     if request.method == "POST":
+        # the data passed into the serializer will be the data of the request that client has sent storing it in a variable
         serialized_item = MenuItemSerializer(data=request.data)
+        # if the data is valid it will be saved
         if serialized_item.is_valid(raise_exception=False):
             serialized_item.save()
+        # returning the data that has been recieved from a client and a status code that it has been created 
         return Response(serialized_item.data, status=201)
 
 
 @api_view()
 def single_item(request, id):
+    # another way of getting a single item and exception in the same method
     item = get_object_or_404(MenuItem, pk=id)
     serialized_item = MenuItemSerializer(item, many=False)
     return Response(serialized_item.data)
