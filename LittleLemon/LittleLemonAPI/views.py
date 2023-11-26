@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import Category
 from .serializers import CategorySerializer
-from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer
 from rest_framework.decorators import renderer_classes
 from rest_framework_csv.renderers import CSVRenderer
 # Create your views here.
@@ -22,9 +21,16 @@ def menu_items(request):
         category_name = request.query_params.get('category')
         # filtering on price
         to_price = request.query_params.get('to_price')
+        search = request.query_params.get('search')
+        if search:
+            items = items.filter(title__startswith=search)
         # if there's a category name :
+        # double underscore because category is related to another model
         if category_name:
             items = items.filter(category__title=category_name)
+        #lte less than equal to the value to_price
+        if to_price:
+            items = items.filter(price__lte=to_price)
             # serialize all the objects of the model passing it to its model serializer and the request
         serialized_item = MenuItemSerializer(
             items, many=True, context={"request": request}
