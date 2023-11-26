@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import Category
 from .serializers import CategorySerializer
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.decorators import renderer_classes
 # Create your views here.
     
 @api_view(['GET', 'POST'])
@@ -31,3 +33,10 @@ def category_detail(request,pk):
     category = get_object_or_404(Category, pk=pk)
     serialized_category = CategorySerializer(category, many=False)
     return Response(serialized_category.data)
+
+@api_view()
+@renderer_classes([TemplateHTMLRenderer])
+def menu(request):
+    items = MenuItem.objects.select_related('category').all()
+    serialized_item = MenuItemSerializer(items, many=True)
+    return Response({'data' : serialized_item.data}, template_name='menu-items.html')
