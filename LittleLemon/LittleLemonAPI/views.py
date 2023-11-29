@@ -7,8 +7,11 @@ from .models import Category
 from .serializers import CategorySerializer
 from rest_framework.decorators import renderer_classes
 from rest_framework_csv.renderers import CSVRenderer
-from django.core.paginator import Paginator,EmptyPage
+from django.core.paginator import Paginator, EmptyPage
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
+
 # Create your views here.
 
 
@@ -49,7 +52,7 @@ def menu_items(request):
             items = paginator.page(number=page)
         except EmptyPage:
             items = []
-            
+
         serialized_item = MenuItemSerializer(
             items, many=True, context={"request": request}
         )
@@ -100,5 +103,17 @@ def welcome(request):
 class MenuItemsViewSet(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
-    ordering_fields=['price','inventory']
-    search_fields=['title','category__title']
+    ordering_fields = ["price", "inventory"]
+    search_fields = ["title", "category__title"]
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+def secret(request):
+    return Response({"message": "some secret message"})
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+def manager_view(request):
+    return Response({"message": "for managers"})
