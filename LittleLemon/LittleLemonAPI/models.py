@@ -13,7 +13,7 @@ class Category(models.Model):
 
 class MenuItem(models.Model):
     title = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=5, decimal_places=2, default=10)
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, db_constraint=False, default=1
     )

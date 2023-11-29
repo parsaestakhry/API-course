@@ -18,21 +18,29 @@ def menu_items(request):
     # if the client request is GET
     if request.method == "GET":
         # save all the objects of the model also their foreign keys in a variable called items
+        # filtering based on query parameters
         items = MenuItem.objects.select_related("category").all()
-        # filtering based on the categories
         category_name = request.query_params.get("category")
-        # filtering on price
         to_price = request.query_params.get("to_price")
         search = request.query_params.get("search")
+        ordering = request.query_params.get('ordering')
+        
+        
+        # checking the condition if the paramater exists
+        # then filter based on the parameter
         if search:
             items = items.filter(title__startswith=search)
         # if there's a category name :
-        # double underscore because category is related to another model
         if category_name:
             items = items.filter(category__title=category_name)
         # lte less than equal to the value to_price
         if to_price:
             items = items.filter(price__lte=to_price)
+        
+        if ordering:
+            ordering_fields = ordering.split(",")
+            items = items.order_by(*ordering_fields)
+            
             # serialize all the objects of the model passing it to its model serializer and the request
         serialized_item = MenuItemSerializer(
             items, many=True, context={"request": request}
