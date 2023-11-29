@@ -7,7 +7,8 @@ from .models import Category
 from .serializers import CategorySerializer
 from rest_framework.decorators import renderer_classes
 from rest_framework_csv.renderers import CSVRenderer
-
+from django.core.paginator import Paginator,EmptyPage
+from rest_framework import viewsets
 # Create your views here.
 
 
@@ -23,9 +24,10 @@ def menu_items(request):
         category_name = request.query_params.get("category")
         to_price = request.query_params.get("to_price")
         search = request.query_params.get("search")
-        ordering = request.query_params.get('ordering')
-        
-        
+        ordering = request.query_params.get("ordering")
+        perpage = request.query_params.get("perpage", default=1)
+        page = request.query_params.get("page", default=1)
+
         # checking the condition if the paramater exists
         # then filter based on the parameter
         if search:
@@ -36,12 +38,18 @@ def menu_items(request):
         # lte less than equal to the value to_price
         if to_price:
             items = items.filter(price__lte=to_price)
-        
+
         if ordering:
             ordering_fields = ordering.split(",")
             items = items.order_by(*ordering_fields)
-            
+
             # serialize all the objects of the model passing it to its model serializer and the request
+        paginator = Paginator(items, per_page=perpage)
+        try:
+            items = paginator.page(number=page)
+        except EmptyPage:
+            items = []
+            
         serialized_item = MenuItemSerializer(
             items, many=True, context={"request": request}
         )
@@ -87,3 +95,10 @@ def menu(request):
 def welcome(request):
     data = "<html><body><h1>Welcome To Little Lemon API Project</h1></body></html>"
     return Response(data)
+
+
+class MenuItemsViewSet(viewsets.ModelViewSet):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
+    ordering_fields=['price','inventory']
+    search_fields=['title','category__title']

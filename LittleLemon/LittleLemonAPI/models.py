@@ -17,6 +17,8 @@ class MenuItem(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, db_constraint=False, default=1
     )
+    
+    inventory = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return self.title
