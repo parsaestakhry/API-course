@@ -8,6 +8,8 @@ urlpatterns = [
     path("menu/", views.menu, name=""),
     path("welcome/", views.welcome,  name=""),
     path("secret/", views.secret, name="secret"),
-    path('api-token-auth/' , obtain_auth_token),
-    path('manager-view/', views.manager_view)
+    path('api-token-auth/' ,obtain_auth_token),
+    path('manager-view/', views.manager_view),
+    path('throttle/', views.throttle_check),
+    path('throttle-auth/', views.throttle_check_auth)
 ]

@@ -5,13 +5,14 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import Category
 from .serializers import CategorySerializer
-from rest_framework.decorators import renderer_classes
+from rest_framework.decorators import renderer_classes, throttle_classes
 from rest_framework_csv.renderers import CSVRenderer
 from django.core.paginator import Paginator, EmptyPage
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
-
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+from .throttles import TenCallsPerMinute
 # Create your views here.
 
 
@@ -117,3 +118,16 @@ def secret(request):
 @permission_classes([IsAuthenticated])
 def manager_view(request):
     return Response({"message": "for managers"})
+
+
+@api_view()
+@throttle_classes([AnonRateThrottle])
+def throttle_check(request):
+    return Response({"message": "successful"})
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+@throttle_classes([TenCallsPerMinute])
+def throttle_check_auth(request):
+    return Response({"message": "successful for logged users only"})
