@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from .throttles import TenCallsPerMinute
+
 # Create your views here.
 
 
@@ -131,3 +132,16 @@ def throttle_check(request):
 @throttle_classes([TenCallsPerMinute])
 def throttle_check_auth(request):
     return Response({"message": "successful for logged users only"})
+
+
+class MenuItemViewSet(viewsets.ModelViewSet):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
+    
+    def get_throttles(self):
+        if self.action == 'create':
+            throttle_classes = [UserRateThrottle]
+        else:
+            throttle_classes = []
+        return [throttle() for throttle in throttle_classes]
