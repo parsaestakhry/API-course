@@ -9,6 +9,7 @@ django-rest-framework = "*"
 djangorestframework-xml = "*"
 djangorestframework-csv = "*"
 bleach = "*"
+djoser = "*"
 
 [dev-packages]
 

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "LittleLemonAPI",
     "rest_framework",
     "rest_framework.authtoken",
+    "djoser",
 ]
 
 MIDDLEWARE = [
@@ -138,11 +139,10 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 2,
-    """
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ),
-    """
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAdminUser",),
     "DEFAULT_THROTTLE_RATES": {
         "anon": "7/minute",
@@ -153,4 +153,11 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
+}
+
+
+DJOSER = {
+    # a field to act as a primary key
+    "USER_ID_FIELD": "username",
+    "LOGIN_FIELD": "email",
 }
