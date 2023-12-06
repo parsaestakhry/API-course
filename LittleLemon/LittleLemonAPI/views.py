@@ -9,10 +9,11 @@ from rest_framework.decorators import renderer_classes, throttle_classes
 from rest_framework_csv.renderers import CSVRenderer
 from django.core.paginator import Paginator, EmptyPage
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.decorators import permission_classes
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from .throttles import TenCallsPerMinute
+from django.contrib.auth.models import User, Group
 
 # Create your views here.
 
@@ -145,3 +146,10 @@ class MenuItemViewSet(viewsets.ModelViewSet):
         else:
             throttle_classes = []
         return [throttle() for throttle in throttle_classes]
+    
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def managers(request):
+    username = request.data['username']
+    return Response({"message" : "ok"})

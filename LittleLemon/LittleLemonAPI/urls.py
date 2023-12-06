@@ -13,5 +13,6 @@ urlpatterns = [
     path('throttle/', views.throttle_check),
     path('throttle-auth/', views.throttle_check_auth),
     path('menu-items/', views.MenuItemViewSet.as_view({'get' : 'list'})),
-    path("menu-item/<int:pk>", views.MenuItemViewSet.as_view({'get' : 'retrieve'}), name="")
+    path("menu-item/<int:pk>", views.MenuItemViewSet.as_view({'get' : 'retrieve'}), name=""),
+    path("groups/manager/users/", views.managers)
 ]
