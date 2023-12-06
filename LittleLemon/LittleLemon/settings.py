@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "djoser",
-    "rest_framework_simplejwt",
-    "rest_framework_simplejwt.token_blacklist",
+    
 ]
 
 MIDDLEWARE = [
